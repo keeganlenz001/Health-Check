@@ -18,8 +18,8 @@ def health_check():
     password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="frmLogin_Password"]')))
     submit = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="btnLogin"]')))
 
-    username.send_keys('klenz')
-    password.send_keys('NxyzBtzV.$8YuwK')
+    username.send_keys('username')
+    password.send_keys('password')
 
     driver.implicitly_wait(100)
     submit.click()
@@ -62,4 +62,3 @@ schedule.every().day.at('1:00').do(health_check)
 while True:
     schedule.run_pending()
     time.sleep(1)
-# Commit?

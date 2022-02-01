@@ -1,11 +1,10 @@
-from selenium import webdriver
+from selenium import webdriver 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-driver = webdriver.Chrome('./chromedriver')
-
+driver = webdriver.Chrome()
 driver.get("https://myclu.callutheran.edu/health-check/?_=1")
 
 
@@ -25,13 +24,15 @@ campus_status.click()
 
 driver.implicitly_wait(10)
 
-vacc_status1 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[1]/div[2]/div[1]/button')))
-vacc_status2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[2]/div[2]/div[2]/button')))
-vacc_status3 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[3]/div[2]/div[2]/button')))
+vacc_status1 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[1]/div[2]/button[1]')))
+vacc_status2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[2]/div[2]/button[3]')))
+vacc_status3 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[3]/div[2]/button[3]')))
+vacc_status4 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[4]/div[2]/button[3]')))
 
 vacc_status1.click()
 vacc_status2.click()
 vacc_status3.click()
+vacc_status4.click()
 
 box1 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="confirm_mask"]')))
 box2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="confirm"]')))

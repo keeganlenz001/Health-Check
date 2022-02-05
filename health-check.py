@@ -9,9 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 login_info = []
 
-def get_user_info():
+def login():
     file_path = 'data.txt'
-
     if os.stat(file_path).st_size == 0:
         input_username = input('Enter your username: ')
         input_password = input('Enter your password: ')
@@ -21,15 +20,13 @@ def get_user_info():
         infile.write(input_password)
         infile.close()
 
-        global login_info
-        login_info = []
+    login_info = []
     with open('data.txt') as infile:
-        for line in infile:
-            login_info.append(line)
+            for line in infile:
+                login_info.append(line)
     infile.close()
 
-def login():
-    get_user_info()
+
     global PATH
     PATH = os.getcwd()
     global driver
@@ -41,7 +38,6 @@ def login():
     password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="frmLogin_Password"]')))
     submit = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="btnLogin"]')))
 
-
     username.send_keys(login_info[0])
     time.sleep(1)
     password.send_keys(login_info[1])
@@ -52,16 +48,15 @@ def health_check():
     login()
 
     try:
-        incorrect = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ErrMsgLogin"]/div')))
+        campus_status = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[3]/div[2]/fieldset/div[2]/div[1]/button')))
+    except:
         driver.quit()
         print('Username or password is incorrect')
         data = open("data.txt", "w")
         data.close()
         health_check()
-    except:
-        pass
+        
 
-    campus_status = WebDriverWait(driver, 0).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[3]/div[2]/fieldset/div[2]/div[1]/button')))
     campus_status.click()
 
     driver.implicitly_wait(10)
@@ -92,5 +87,7 @@ def health_check():
 
     check = driver.find_element_by_xpath('/html/body/div/div[2]/div[3]/div[7]/button')
     check.click()
+    driver.quit()
 
-health_check()
+if __name__ == '__main__':
+    health_check()

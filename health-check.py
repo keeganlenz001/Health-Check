@@ -1,53 +1,96 @@
+import os
+import time
+from webbrowser import get
 from selenium import webdriver 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-driver = webdriver.Chrome()
-driver.get("https://myclu.callutheran.edu/health-check/?_=1")
+login_info = []
+
+def get_user_info():
+    file_path = 'data.txt'
+
+    if os.stat(file_path).st_size == 0:
+        input_username = input('Enter your username: ')
+        input_password = input('Enter your password: ')
+        infile = open("data.txt", "a")
+        infile.write(input_username)
+        infile.write("\n")
+        infile.write(input_password)
+        infile.close()
+
+        global login_info
+        login_info = []
+    with open('data.txt') as infile:
+        for line in infile:
+            login_info.append(line)
+    infile.close()
+
+def login():
+    get_user_info()
+    global PATH
+    PATH = os.getcwd()
+    global driver
+    driver = webdriver.Chrome(PATH + "/chromedriver.exe")
+    driver.get("https://myclu.callutheran.edu/health-check/?_=1")
 
 
-username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="frmLogin_UserName"]')))
-password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="frmLogin_Password"]')))
-submit = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="btnLogin"]')))
-
-username.send_keys('username')
-password.send_keys('password')
-
-driver.implicitly_wait(100)
-submit.click()
+    username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="frmLogin_UserName"]')))
+    password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="frmLogin_Password"]')))
+    submit = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="btnLogin"]')))
 
 
-campus_status = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[3]/div[2]/fieldset/div[2]/div[1]/button')))
-campus_status.click()
+    username.send_keys(login_info[0])
+    time.sleep(1)
+    password.send_keys(login_info[1])
+    submit.click()
 
-driver.implicitly_wait(10)
 
-vacc_status1 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[1]/div[2]/button[1]')))
-vacc_status2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[2]/div[2]/button[3]')))
-vacc_status3 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[3]/div[2]/button[3]')))
-vacc_status4 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[4]/div[2]/button[3]')))
+def health_check():
+    login()
 
-vacc_status1.click()
-vacc_status2.click()
-vacc_status3.click()
-vacc_status4.click()
+    try:
+        incorrect = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ErrMsgLogin"]/div')))
+        driver.quit()
+        print('Username or password is incorrect')
+        data = open("data.txt", "w")
+        data.close()
+        health_check()
+    except:
+        pass
 
-box1 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="confirm_mask"]')))
-box2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="confirm"]')))
+    campus_status = WebDriverWait(driver, 0).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[3]/div[2]/fieldset/div[2]/div[1]/button')))
+    campus_status.click()
 
-box1.click()
-box2.click()
+    driver.implicitly_wait(10)
+    vacc_status1 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[1]/div[2]/button[1]')))
+    vacc_status2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[2]/div[2]/button[3]')))
+    vacc_status3 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[3]/div[2]/button[3]')))
+    vacc_status4 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[3]/div[4]/div[2]/fieldset[4]/div[2]/button[3]')))
 
-fname = driver.find_element_by_xpath('/html/body/div/div[2]/div[3]/div[5]/div[2]/div[3]/div[1]/label').text
-lname = driver.find_element_by_xpath('/html/body/div/div[2]/div[3]/div[5]/div[2]/div[3]/div[2]/label').text
+    vacc_status1.click()
+    vacc_status2.click()
+    vacc_status3.click()
+    vacc_status4.click()
 
-fbox = driver.find_element_by_xpath('//*[@id="signature_first_name"]')
-lbox = driver.find_element_by_xpath('//*[@id="signature_last_name"]')
+    box1 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="confirm_mask"]')))
+    box2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="confirm"]')))
 
-fbox.send_keys(fname)
-lbox.send_keys(lname)
+    box1.click()
+    box2.click()
 
-check = driver.find_element_by_xpath('/html/body/div/div[2]/div[3]/div[7]/button')
-check.click()
+    fname = driver.find_element_by_xpath('/html/body/div/div[2]/div[3]/div[5]/div[2]/div[3]/div[1]/label').text
+    lname = driver.find_element_by_xpath('/html/body/div/div[2]/div[3]/div[5]/div[2]/div[3]/div[2]/label').text
+
+    fbox = driver.find_element_by_xpath('//*[@id="signature_first_name"]')
+    lbox = driver.find_element_by_xpath('//*[@id="signature_last_name"]')
+
+    fbox.send_keys(fname)
+    lbox.send_keys(lname)
+
+    check = driver.find_element_by_xpath('/html/body/div/div[2]/div[3]/div[7]/button')
+    check.click()
+
+health_check()
